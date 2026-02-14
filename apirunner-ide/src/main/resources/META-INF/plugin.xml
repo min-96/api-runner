@@ -1,0 +1,20 @@
+<idea-plugin>
+    <id>com.apirunner.ide</id>
+    <name>Spring Controller API Runner</name>
+    <vendor email="dev@apirunner.local" url="https://example.com">API Runner</vendor>
+
+    <description><![CDATA[
+      Run Spring controller APIs directly from editor gutter.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends optional="true" config-file="kotlin-support.xml">org.jetbrains.kotlin</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="API Runner" anchor="bottom" factoryClass="com.apirunner.ide.ui.ApiRunnerToolWindowFactory"/>
+        <runLineMarkerContributor language="JAVA" implementationClass="com.apirunner.ide.marker.ApiRunnerRunLineMarkerContributor"/>
+        <projectService serviceImplementation="com.apirunner.ide.runtime.ApiRunnerProjectService"/>
+        <projectService serviceImplementation="com.apirunner.ide.ui.ApiRunnerResultService"/>
+    </extensions>
+</idea-plugin>
