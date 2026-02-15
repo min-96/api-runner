@@ -3,7 +3,6 @@ package com.apirunner.ide.ui
 import com.apirunner.core.model.ApiRequest
 import com.intellij.json.JsonFileType
 import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.openapi.ui.ValidationInfo
@@ -23,16 +22,14 @@ class ApiRequestDialogWrapper(
 ) : DialogWrapper(project) {
 
     private val pathField = JBTextField(initial.pathTemplate)
-    private val queryField = JBTextField(initial.queryParams.entries.joinToString("&") { "${it.key}=${it.value}" })
-    private val headersField = JBTextField(initial.headers.entries.joinToString(";") { "${it.key}:${it.value}" })
+    private val queryField = JBTextField(RequestInputCodec.formatQuery(initial.queryParams))
+    private val headersField = JBTextField(RequestInputCodec.formatHeaders(initial.headers))
     private val bodyEditor = EditorTextField(
         EditorFactory.getInstance().createDocument(initial.body.orEmpty()),
         project,
         JsonFileType.INSTANCE
     ).apply {
         setOneLineMode(false)
-        val scheme = EditorColorsManager.getInstance().globalScheme
-        background = scheme.defaultBackground
         preferredSize = Dimension(640, 260)
     }
 
@@ -86,41 +83,13 @@ class ApiRequestDialogWrapper(
     }
 
     fun buildRequest(): ApiRequest? {
-        val parsedQuery = parseQuery(queryField.text)
-        val parsedHeaders = parseHeaders(headersField.text)
+        val parsedQuery = RequestInputCodec.parseQuery(queryField.text)
+        val parsedHeaders = RequestInputCodec.parseHeaders(headersField.text)
         return initial.copy(
             pathTemplate = pathField.text.trim().ifEmpty { initial.pathTemplate },
             queryParams = parsedQuery.toMutableMap(),
             headers = parsedHeaders.toMutableMap(),
             body = bodyEditor.text.takeIf { it.isNotBlank() }
         )
-    }
-
-    private fun parseQuery(input: String): Map<String, String> {
-        if (input.isBlank()) {
-            return emptyMap()
-        }
-        return input.split('&').mapNotNull {
-            val idx = it.indexOf('=')
-            if (idx <= 0) {
-                null
-            } else {
-                it.substring(0, idx).trim() to it.substring(idx + 1).trim()
-            }
-        }.toMap()
-    }
-
-    private fun parseHeaders(input: String): Map<String, String> {
-        if (input.isBlank()) {
-            return emptyMap()
-        }
-        return input.split(';').mapNotNull {
-            val idx = it.indexOf(':')
-            if (idx <= 0) {
-                null
-            } else {
-                it.substring(0, idx).trim() to it.substring(idx + 1).trim()
-            }
-        }.toMap()
     }
 }

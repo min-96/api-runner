@@ -8,12 +8,13 @@
 
 ## 2. 현재 동작 정책 (As-Is)
 - 서버 자동 실행/재시작을 하지 않는다.
-- API 호출 시 서버 포트는 사용자 입력(기본 8080)으로 받는다.
+- ToolWindow `Settings` 탭에서 서버 포트(기본 8080)를 지정한다.
 - 입력된 포트는 프로젝트 단위로 저장되어 다음 호출에 재사용된다.
 - 요청 Dialog는 엔드포인트별 마지막 draft를 자동 복원한다.
   - 키: `METHOD + pathTemplate`
   - 저장 항목: path/query/headers/body
 - 응답 Body가 JSON이면 결과 화면에서 자동 Pretty Print한다.
+- 결과창 `Request` 섹션에서 실제 전송 요청(method/url/headers/body)을 확인할 수 있다.
 - multipart/form-data를 지원한다.
   - Body 포맷: `key=value` 라인 기반
   - 파일: `file=@relative/path`
@@ -23,6 +24,11 @@
   - `../` 루트 탈출 금지
 
 ## 3. 사용자 사용법
+### 3.0 서버 포트 설정
+1. API Runner ToolWindow에서 `Settings` 탭 선택
+2. `Server Port` 입력 후 `Apply`
+3. 이후 실행부터 저장된 포트가 자동 적용
+
 ### 3.1 일반 JSON API
 1. Controller 메서드 옆 ▶ 클릭
 2. Path/Query/Header/Body 수정
@@ -46,13 +52,14 @@ metadata={"userId":1,"name":"test"}
 - `./gradlew :apirunner-http:test :apirunner-ide:test`
 - `./gradlew :apirunner-ide:buildPlugin`
 - 산출물 확인:
-  - `apirunner-ide/build/distributions/apirunner-ide-0.1.0.zip`
+  - `apirunner-ide/build/distributions/apirunner-ide-1.0.2.zip`
 - 내부 설치 테스트:
   - IntelliJ `Install Plugin from Disk`
 
 ## 5. 유지보수 핵심 포인트
 ### 5.1 포트 정책
 - 진입 지점: `apirunner-ide/src/main/kotlin/com/apirunner/ide/runtime/ApiRunnerExecutor.kt`
+- 설정 UI: `apirunner-ide/src/main/kotlin/com/apirunner/ide/ui/ApiRunnerSettingsService.kt`
 - 포트 저장소: `apirunner-ide/src/main/kotlin/com/apirunner/ide/runtime/ApiRunnerProjectService.kt`
 - 서버 실행 자동화 코드는 의도적으로 비활성(정책상 미사용) 상태.
 

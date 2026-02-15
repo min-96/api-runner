@@ -17,13 +17,10 @@ import com.apirunner.ide.ui.ApiRequestDialogWrapper
 import com.apirunner.ide.ui.ApiRunnerResultService
 import com.apirunner.ide.ui.ResultPresenter
 import com.apirunner.ide.ui.ResultSink
-import com.apirunner.ide.ui.ResultViewModel
-import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.progress.ProgressIndicator
 import com.intellij.openapi.progress.Task
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.ui.Messages
 import com.intellij.psi.JavaPsiFacade
 import com.intellij.psi.PsiEnumConstant
 import com.intellij.psi.PsiMethod
@@ -75,13 +72,7 @@ class ApiRunnerExecutor(private val project: Project) {
             override fun run(indicator: ProgressIndicator) {
                 val serverManager = ServerManager(
                     process = IntellijServerProcess(session),
-                    fallbackPortProvider = {
-                        askPortFallback(session.getLastPort()).also { chosen ->
-                            if (chosen != null) {
-                                session.setLastPort(chosen)
-                            }
-                        }
-                    }
+                    fallbackPortProvider = { session.getLastPort() ?: DEFAULT_PORT }
                 )
                 val httpExecutor = createHttpExecutor(session.context, session)
                 val presenter = ResultPresenter(serviceBackedSink())
@@ -303,27 +294,7 @@ class ApiRunnerExecutor(private val project: Project) {
     }
 
     private fun serviceBackedSink(): ResultSink {
-        val service = project.getService(ApiRunnerResultService::class.java)
-        return object : ResultSink {
-            override fun update(result: ResultViewModel) {
-                service.show(result)
-            }
-        }
-    }
-
-    private fun askPortFallback(defaultPort: Int?): Int? {
-        val ref = arrayOfNulls<String>(1)
-        ApplicationManager.getApplication().invokeAndWait {
-            ref[0] = Messages.showInputDialog(
-                project,
-                "Enter server port:",
-                "API Runner",
-                Messages.getQuestionIcon(),
-                defaultPort?.toString() ?: "8080",
-                null
-            )
-        }
-        return ref[0]?.toIntOrNull()
+        return project.getService(ApiRunnerResultService::class.java)
     }
 
     private fun normalizeMultipartFilePaths(request: ApiRequest): ApiRequest {
@@ -366,5 +337,9 @@ class ApiRunnerExecutor(private val project: Project) {
             return null
         }
         return normalized.toString()
+    }
+
+    companion object {
+        private const val DEFAULT_PORT = 8080
     }
 }

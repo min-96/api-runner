@@ -7,8 +7,14 @@ import com.intellij.ui.content.ContentFactory
 
 class ApiRunnerToolWindowFactory : ToolWindowFactory {
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val service = project.getService(ApiRunnerResultService::class.java)
-        val content = ContentFactory.getInstance().createContent(service.content, "Result", false)
-        toolWindow.contentManager.addContent(content)
+        val contentFactory = ContentFactory.getInstance()
+        val resultService = project.getService(ApiRunnerResultService::class.java)
+        val settingsService = project.getService(ApiRunnerSettingsService::class.java)
+
+        val resultContent = contentFactory.createContent(resultService.content, "Result", false)
+        val settingsContent = contentFactory.createContent(settingsService.content, "Settings", false)
+
+        toolWindow.contentManager.addContent(resultContent)
+        toolWindow.contentManager.addContent(settingsContent)
     }
 }

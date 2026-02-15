@@ -10,6 +10,7 @@ class HttpCallStep(
 ) : Step {
     override fun execute(context: ExecutionContext) {
         val resolvedRequest = TemplateResolver.resolve(request, context)
+        context.lastRequest = resolvedRequest
         val response = httpExecutor.execute(resolvedRequest, context)
         context.lastResponse = response
     }

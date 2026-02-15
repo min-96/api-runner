@@ -1,11 +1,7 @@
 package com.apirunner.ide.ui
 
-class ResultToolWindowFactory : ResultSink {
-    private var latest: ResultViewModel? = null
-
-    override fun update(result: ResultViewModel) {
-        latest = result
-    }
-
-    fun latestResult(): ResultViewModel? = latest
-}
+@Deprecated(
+    message = "Use InMemoryResultSink for tests and non-UI capture use cases.",
+    replaceWith = ReplaceWith("InMemoryResultSink")
+)
+class ResultToolWindowFactory : InMemoryResultSink()

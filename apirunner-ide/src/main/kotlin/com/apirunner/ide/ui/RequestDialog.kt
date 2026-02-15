@@ -12,10 +12,7 @@ class RequestDialog {
             }
         }
 
-        val isMultipart = request.headers.any { (k, v) ->
-            k.equals("Content-Type", ignoreCase = true) &&
-                v.contains("multipart/form-data", ignoreCase = true)
-        }
+        val isMultipart = RequestHeaderSupport.isMultipart(request.headers)
 
         val body = request.body
         if (!body.isNullOrBlank()) {

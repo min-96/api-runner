@@ -10,8 +10,9 @@ Spring Controller 메서드 옆 ▶ 버튼으로 API를 호출하는 IntelliJ Pl
 
 ## Current MVP 1 Policy
 - 서버 자동 실행/자동 재시작 없음
-- 포트는 사용자 입력(기본 8080) + 프로젝트 단위 저장 재사용
+- ToolWindow `Settings` 탭에서 포트 지정(기본 8080) + 프로젝트 단위 저장 재사용
 - 응답 JSON은 결과창에서 자동 Pretty Print
+- 결과창 `Request` 섹션에서 실제 전송 요청(method/url/headers/body) 확인 가능
 - `multipart/form-data` 지원 (`file=@...`, `metadata={...}`)
 - multipart 파일 경로는 프로젝트 루트 기준 상대경로만 허용
 - 엔드포인트별 마지막 요청 draft 자동 복원 (`METHOD + pathTemplate`)
@@ -28,5 +29,5 @@ Spring Controller 메서드 옆 ▶ 버튼으로 API를 호출하는 IntelliJ Pl
 ```
 
 ## Local Plugin Package
-- output: `apirunner-ide/build/distributions/apirunner-ide-0.1.0.zip`
+- output: `apirunner-ide/build/distributions/apirunner-ide-1.0.2.zip`
 - IntelliJ: `Settings > Plugins > ⚙ > Install Plugin from Disk...`

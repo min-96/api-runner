@@ -18,9 +18,8 @@ class ApiExecutionOrchestrator(
     fun execute(request: ApiRequest, existingContext: ExecutionContext? = null): ExecutionContext {
         val context = existingContext ?: ExecutionContext()
         try {
-            if (context.baseUrl.isBlank()) {
-                context.baseUrl = serverManager.ensureServerRunning()
-            }
+            // Refresh on every run so updated Settings port is applied immediately.
+            context.baseUrl = serverManager.ensureServerRunning()
 
             val plan = ExecutionPlan(
                 listOf(HttpCallStep(request, httpExecutor))
@@ -28,14 +27,16 @@ class ApiExecutionOrchestrator(
             engine.run(plan, context)
 
             val response = requireNotNull(context.lastResponse) { "No response produced by execution plan" }
-            resultPresenter.showResponse(response)
+            val resolvedRequest = context.lastRequest ?: request
+            resultPresenter.showResponse(response, resolvedRequest, context.baseUrl)
         } catch (t: Throwable) {
             val causeMessage = t.cause?.message
             val message = listOfNotNull(t.message, causeMessage)
                 .distinct()
                 .joinToString(" | ")
                 .ifBlank { "Execution failed" }
-            resultPresenter.showError(message)
+            val resolvedRequest = context.lastRequest ?: request
+            resultPresenter.showError(message, resolvedRequest, context.baseUrl)
         }
         return context
     }

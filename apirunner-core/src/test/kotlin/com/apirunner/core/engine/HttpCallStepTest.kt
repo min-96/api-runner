@@ -37,6 +37,8 @@ class HttpCallStepTest {
         assertNotNull(capturedRequest)
         assertEquals("/m/10", capturedRequest?.pathTemplate)
         assertEquals("Bearer token-1", capturedRequest?.headers?.get("Authorization"))
+        assertEquals("/m/10", context.lastRequest?.pathTemplate)
+        assertEquals("Bearer token-1", context.lastRequest?.headers?.get("Authorization"))
         assertEquals(200, context.lastResponse?.status)
     }
 }
