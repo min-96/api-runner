@@ -15,6 +15,8 @@ repositories {
 }
 
 intellijPlatform {
+    buildSearchableOptions = false
+
     pluginConfiguration {
         version = project.version.toString()
         ideaVersion {
